@@ -1,52 +1,51 @@
 const Apify = require('apify');
-const http = require('http');
-
-const { pleaseOpen, liveView, localhost } = require('./messages.js');
+const scraper = require('./scraper')
+const {
+    login,
+    verificationCheck,
+    promptVerification
+} = require('./helpers')
 
 Apify.main(async () => {
 
-        //const input = await Apify.getValue('INPUT');
-        const username = 'vojta@navtalent.com'
-        const password = 'Apifier!?23'
-        const input = {username, password}
-    
-        const browser = await Apify.launchPuppeteer();
-        const page = await browser.newPage();
-        await page.goto('https://twitter.com');
-    
-        // Login
-        await page.type('[autocomplete=username]', input.username);
-        await page.type('[autocomplete=current-password]', input.password);
-        await page.click('[value="Log in"]');
-        //await page.waitForNavigation();
+    // open fresh twitter
+    const input = await Apify.getValue('INPUT');
+    const browser = await Apify.launchPuppeteer();
+    const page = await browser.newPage();
+    await page.goto('https://twitter.com');
 
-        console.log('please submit verification code')
-        
-    
-        //await browser.close();
+    // login
+    await login(page, input)
 
-    const verificationCode = await promptVerification()
+    // check for human verification requirement
+    const requiredVerification = await verificationCheck(page)
 
-})
+    // prompt for human verification, if needed
+    if (requiredVerification) {
+        const verificationCode = await promptVerification()
 
-async function promptVerification() {
-    const port = Apify.isAtHome() ? process.env.APIFY_CONTAINER_PORT : 3000
-    const promptLocation = Apify.isAtHome() ? liveView : localhost
-
-    const server = http.createServer((req, res)=>{
-        res.end("hey there")
-    })
-
-    await server.listen(port, () => console.log('server is listening on port', port))
-
-    console.log(pleaseOpen)
-    console.log(promptLocation)
-    
-    let code;
-
-    while(!code){
-       console.log("chekcin...")
-        await new Promise(resolve => setTimeout(resolve, 10000))
+        // enter login verification
+        await page.type('#challenge_response', verificationCode);
+        await page.click('#email_challenge_submit');
     }
 
-}
+    // get tweet history
+    const tweetHistory = await scraper.getActivity(page, input.handle, input.tweetsDesired)
+
+    // get user profile
+    const userProfile = await scraper.getProfile(page, input.handle)
+
+    // get followers
+    const followers = await scraper.getFollowers(page, input.handle, input.followersDesired, 'followers')
+
+    // get following
+    const following = await scraper.getFollowers(page, input.handle, input.followersDesired, 'following')
+
+    // store data
+    await Apify.pushData({
+        userProfile: userProfile,
+        followers: followers,
+        following: following,
+        tweetHistory: tweetHistory
+    });
+})

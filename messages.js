@@ -7,7 +7,7 @@ module.exports.pleaseOpen = `
    |_|    |_|\\___|\\__,_|___/\\___|  \\___/| .__/ \\___|_| |_|
                                         | |               
                                         |_|               
-`           
+`
 
 module.exports.liveView = `
     _ _                   _               

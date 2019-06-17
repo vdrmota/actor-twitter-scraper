@@ -1,0 +1,38 @@
+{
+    "title": "Twitter scraper",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "username": {
+            "title": "Your Twitter Username",
+            "type": "string",
+            "description": "Your Twitter username will be used to bypass the Twitter login wall."
+        },
+        "password": {
+            "title": "Your Twitter Password",
+            "type": "string",
+            "description": "Your Twitter password will be used to bypass the Twitter login wall.",
+        },
+        "handle": {
+            "title": "Profile to Scrape",
+            "type": "string",
+            "description": "The twitter handle of the profile you want to scrape.",
+            "prefill": "@elonmusk"
+        },
+        "tweetsDesired": {
+            "title": "Max. Number of Tweets to Retrieve",
+            "type": "integer",
+            "default": 100
+        },
+        "followersDesired": {
+            "title": "Max. Number of Followers to Retrieve",
+            "type": "integer",
+            "default": 100
+        },
+        "followingDesired": {
+            "title": "Max. Number of Following to Retrieve",
+            "type": "boolean",
+            "default": 100
+    },
+    "required": ["username", "password", "handle"]
+}
