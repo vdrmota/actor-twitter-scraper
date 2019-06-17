@@ -17,7 +17,6 @@ module.exports = {
         await page.waitForNavigation({
             waitUntil: 'networkidle2'
         });
-
         await Apify.utils.puppeteer.injectJQuery(page);
     },
 
@@ -25,12 +24,18 @@ module.exports = {
         await page.type('[autocomplete=username]', input.username);
         await page.type('[autocomplete=current-password]', input.password);
 
-        await page.click('[value="Log in"]');
+        await Promise.all([
+            page.waitForNavigation({
+                waitUntil: 'domcontentloaded'
+            }),
+            page.click('[value="Log in"]'),
+          ]);
     },
 
     verificationCheck: async function(page) {
+        await Apify.utils.puppeteer.injectJQuery(page);
+        await new Promise(resolve => setTimeout(resolve, 2000));
         return await page.evaluate(() => {
-            console.log($("body").hasClass("logged-in"));
             return !$("body").hasClass("logged-in");
         })
     },

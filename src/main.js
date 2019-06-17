@@ -11,7 +11,8 @@ Apify.main(async () => {
 
     // open fresh twitter
     const input = await Apify.getValue('INPUT');
-    const browser = await Apify.launchPuppeteer(input.proxyConfig || {});
+    const launchPuppeteerOptions = Object.assign(input.proxyConfig || {}, { liveView: true });
+    const browser = await Apify.launchPuppeteer(launchPuppeteerOptions);
     const page = await browser.newPage();
     await page.goto('https://twitter.com');
 
@@ -19,7 +20,6 @@ Apify.main(async () => {
     await login(page, input)
 
     // check for human verification requirement
-    await preparePage(page)
     const requiredVerification = await verificationCheck(page)
 
     // prompt for human verification, if needed
