@@ -25,19 +25,19 @@
         "tweetsDesired": {
             "title": "Max. Number of Tweets to Retrieve",
             "type": "integer",
-            "description": "Your Twitter username will be used to bypass the Twitter login wall.",
+            "description": "Max. Number of Tweets to Retrieve.",
             "default": 100
         },
         "followersDesired": {
             "title": "Max. Number of Followers to Retrieve",
             "type": "integer",
-            "description": "Your Twitter username will be used to bypass the Twitter login wall.",
+            "description": "Max. Number of Followers to Retrieve.",
             "default": 100
         },
         "followingDesired": {
             "title": "Max. Number of Following to Retrieve",
             "type": "integer",
-            "description": "Your Twitter username will be used to bypass the Twitter login wall.",
+            "description": "Max. Number of Following to Retrieve.",
             "default": 100
         }
     },
