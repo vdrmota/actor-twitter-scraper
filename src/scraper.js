@@ -5,8 +5,8 @@ const {
 
 module.exports = {
 
-    scrapeTimeline: async function(page, output) {
-        return await page.evaluate((existing) => {
+    scrapeTimeline: async function(page, output, handle) {
+        return await page.evaluate((existing, handle) => {
 
             var res = []
             var counter = 0;
@@ -47,7 +47,7 @@ module.exports = {
                 const likes = $(".js-actionFavorite .ProfileTweet-actionCount .ProfileTweet-actionCountForPresentation", this).html();
                 const retweets = $(".js-toggleRt .ProfileTweet-actionCount .ProfileTweet-actionCountForPresentation", this).html();
                 const comments = $(".js-actionReply .ProfileTweet-actionCount .ProfileTweet-actionCountForPresentation", this).html();
-                const tweetLink = `https://twitter.com/elonmusk/status/${$(this).attr('data-item-id')}`;
+                const tweetLink = `https://twitter.com/${handle}/status/${$(this).attr('data-item-id')}`;
                 const contentText = $(".js-tweet-text-container p", this).text().replace(/^\s+|\s+$/g, '')
                 const contentHtml = $(".js-tweet-text-container p", this).html()
                 const dateTime = $(".stream-item-header .tweet-timestamp", this).attr("title");
@@ -70,7 +70,7 @@ module.exports = {
 
             return res
 
-        }, output.length)
+        }, output.length, handle)
 
     },
 
@@ -85,7 +85,7 @@ module.exports = {
 
         // scraped desired number of tweets
         do {
-            var activity = await module.exports.scrapeTimeline(page, output);
+            var activity = await module.exports.scrapeTimeline(page, output, handle);
             var oldOutput = output;
             output = [...output, ...activity];
             await infiniteScroll(page, SCROLL_DURATION);
@@ -147,10 +147,11 @@ module.exports = {
 
     },
 
-    getFollowers: async function(page, handle, desired, type = 'followers') {
+    getFollowers: async function(page, handle, desired, type) {
 
         const SCROLL_DURATION = 1
 
+        console.log(type)
         await page.goto(`https://twitter.com/${handle}/${type}`);
         await preparePage(page)
 
