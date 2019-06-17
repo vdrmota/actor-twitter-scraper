@@ -11,7 +11,7 @@
         "password": {
             "title": "Your Twitter Password",
             "type": "string",
-            "description": "Your Twitter password will be used to bypass the Twitter login wall.",
+            "description": "Your Twitter password will be used to bypass the Twitter login wall."
         },
         "handle": {
             "title": "Profile to Scrape",
