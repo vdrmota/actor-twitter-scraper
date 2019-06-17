@@ -31,8 +31,8 @@
         },
         "followingDesired": {
             "title": "Max. Number of Following to Retrieve",
-            "type": "boolean",
-            "default": 100
+            "type": "boolean"
+        }
     },
     "required": ["username", "password", "handle"]
 }
