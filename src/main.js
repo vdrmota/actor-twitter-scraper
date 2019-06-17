@@ -3,14 +3,15 @@ const scraper = require('./scraper')
 const {
     login,
     verificationCheck,
-    promptVerification
+    promptVerification,
+    preparePage
 } = require('./helpers')
 
 Apify.main(async () => {
 
     // open fresh twitter
     const input = await Apify.getValue('INPUT');
-    const browser = await Apify.launchPuppeteer(input.proxyConfig || {});
+    const browser = await Apify.launchPuppeteer(input.proxyConfig || {});
     const page = await browser.newPage();
     await page.goto('https://twitter.com');
 
@@ -18,6 +19,7 @@ Apify.main(async () => {
     await login(page, input)
 
     // check for human verification requirement
+    await preparePage(page)
     const requiredVerification = await verificationCheck(page)
 
     // prompt for human verification, if needed

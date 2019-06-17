@@ -26,13 +26,9 @@ module.exports = {
         await page.type('[autocomplete=current-password]', input.password);
 
         await page.click('[value="Log in"]');
-        await page.waitForNavigation({
-            waitUntil: 'networkidle2'
-        });
     },
 
     verificationCheck: async function(page) {
-        await Apify.utils.puppeteer.injectJQuery(page);
         return await page.evaluate(() => {
             console.log($("body").hasClass("logged-in"));
             return !$("body").hasClass("logged-in");
