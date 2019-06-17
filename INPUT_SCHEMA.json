@@ -23,22 +23,29 @@
             "editor": "textfield"
         },
         "tweetsDesired": {
-            "title": "Max. Number of Tweets to Retrieve",
+            "title": "Max. Tweets",
             "type": "integer",
             "description": "Max. Number of Tweets to Retrieve.",
             "default": 100
         },
         "followersDesired": {
-            "title": "Max. Number of Followers to Retrieve",
+            "title": "Max. Followers",
             "type": "integer",
             "description": "Max. Number of Followers to Retrieve.",
             "default": 100
         },
         "followingDesired": {
-            "title": "Max. Number of Following to Retrieve",
+            "title": "Max. Following",
             "type": "integer",
             "description": "Max. Number of Following to Retrieve.",
             "default": 100
+        },
+        "proxyConfig": {
+            "title": "Proxy configuration",
+            "type": "object",
+            "description": "Optionally use a proxy.",
+            "default": {},
+            "editor": "proxy"
         }
     },
     "required": ["username", "password", "handle"]

@@ -10,7 +10,7 @@ Apify.main(async () => {
 
     // open fresh twitter
     const input = await Apify.getValue('INPUT');
-    const browser = await Apify.launchPuppeteer();
+    const browser = await Apify.launchPuppeteer(input.proxyConfig || {});
     const page = await browser.newPage();
     await page.goto('https://twitter.com');
 
