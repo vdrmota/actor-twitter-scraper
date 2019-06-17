@@ -7,20 +7,20 @@
             "title": "Your Twitter Username",
             "type": "string",
             "description": "Your Twitter username will be used to bypass the Twitter login wall.",
-            "editor": "stringList"
+            "editor": "textfield"
         },
         "password": {
             "title": "Your Twitter Password",
             "type": "string",
             "description": "Your Twitter password will be used to bypass the Twitter login wall.",
-            "editor": "stringList"
+            "editor": "textfield"
         },
         "handle": {
             "title": "Profile to Scrape",
             "type": "string",
             "description": "The twitter handle of the profile you want to scrape.",
             "prefill": "@elonmusk",
-            "editor": "stringList"
+            "editor": "textfield"
         },
         "tweetsDesired": {
             "title": "Max. Number of Tweets to Retrieve",
