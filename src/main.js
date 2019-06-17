@@ -31,17 +31,56 @@ Apify.main(async () => {
         await page.click('#email_challenge_submit');
     }
 
-    // get tweet history
-    const tweetHistory = await scraper.getActivity(page, input.handle, input.tweetsDesired)
+    var tweetHistory, userProfile, followers, following;
 
-    // get user profile
-    const userProfile = await scraper.getProfile(page, input.handle)
+    // request queue
+    await Promise.all([
 
-    // get followers
-    const followers = await scraper.getFollowers(page, input.handle, input.followersDesired, 'followers')
+        // get tweet history
+        new Promise (async (resolve, reject) => {
+            try {
+                console.log("Scraping tweets...")
+                tweetHistory = await scraper.getActivity(page, input.handle, input.tweetsDesired)
+                return resolve(console.log("[FINISHED] Scraping tweets."))
+            } catch (err) {
+                return reject(err)
+            }
+        }),
 
-    // get following
-    const following = await scraper.getFollowers(page, input.handle, input.followersDesired, 'following')
+        // get user profile
+        new Promise (async (resolve, reject) => {
+            try {
+                console.log("Scraping profile...")
+                userProfile = await scraper.getProfile(page, input.handle)
+                return resolve(console.log("[FINISHED] Scraping profile."))
+            } catch (err) {
+                return reject(err)
+            }
+        }),
+
+        // get followers
+        new Promise (async (resolve, reject) => {
+            try {
+                console.log("Scraping followers...")
+                followers = await scraper.getFollowers(page, input.handle, input.followersDesired, 'followers')
+                return resolve(console.log("[FINISHED] Scraping followers."))
+            } catch (err) {
+                return reject(err)
+            }
+        }),
+
+        // get following
+        new Promise (async (resolve, reject) => {
+            try {
+                console.log("Scraping following...")
+                following = await scraper.getFollowers(page, input.handle, input.followersDesired, 'following')
+                return resolve(console.log("[FINISHED] Scraping following."))
+            } catch (err) {
+                return reject(err)
+            }
+        })
+
+    ])
 
     // store data
     await Apify.pushData({

@@ -9,7 +9,7 @@ module.exports.getInput = () =>
     <title>Please provide authorization input</title>
   </head>
   <body>
-    <p style="${pCss} margin-top: 200px;"> Please copy/paste the verification code. Then click submit. </p>
+    <p style="${pCss} margin-top: 200px;"> Please enter the phone number associated with your Twitter account (Twitter demands this verification). Then click submit. </p>
     <form method="POST" action="/input" style="text-align: center; margin-top: 50px">
       <input placeholder= "your input" name="code" id="code" style="font-size: 14px;font-family: monospace,serif;color: #11181c; border-radius: 3px; border: 1px solid #ccc; padding: 10px 15px; width: 400px; height: 20px; margin: auto"/>
       <input type="submit" style="${inputCss}"/>
