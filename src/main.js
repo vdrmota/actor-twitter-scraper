@@ -17,7 +17,12 @@ Apify.main(async () => {
     await page.goto('https://twitter.com');
 
     // login
-    await login(page, input)
+    try {
+        await login(page, input)
+    }
+    catch (err) {
+        throw new Error("[FAILED] Incorrect login credentials.")
+    }
 
     // check for human verification requirement
     const requiredVerification = await verificationCheck(page)
