@@ -14,9 +14,9 @@ const {
 module.exports = {
 
     preparePage: async function(page) {
-        await page.waitForNavigation({
-            waitUntil: 'networkidle2'
-        });
+        // await page.waitForNavigation({
+        //     waitUntil: 'networkidle2'
+        // });
         await Apify.utils.puppeteer.injectJQuery(page);
     },
 

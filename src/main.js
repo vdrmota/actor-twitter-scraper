@@ -31,26 +31,17 @@ Apify.main(async () => {
         await page.click('#email_challenge_submit');
     }
 
-    var tweetHistory, userProfile, followers, following;
+    // get tweet history
+    const tweetHistory = await scraper.getActivity(browser, input.handle, input.tweetsDesired)
 
-    await Promise.all([
-        new Promise(async (resolve, reject) => {
-            console.log("Scraping tweets...")
-            return resolve(tweetHistory = scraper.getActivity(browser, input.handle, input.tweetsDesired))
-        }),
-        new Promise(async (resolve, reject) => {
-            console.log("Scraping profile...")
-            return resolve(userProfile = scraper.getProfile(browser, input.handle))
-        }),
-        new Promise(async (resolve, reject) => {
-            console.log("Scraping followers...")
-            return resolve(followers = scraper.getFollowers(browser, input.handle, input.followersDesired, 'followers'))
-        }),
-        new Promise(async (resolve, reject) => {
-            console.log("Scraping following...")
-            return resolve(following = scraper.getFollowers(browser, input.handle, input.followersDesired, 'following'))
-        })
-    ])
+    // get user profile
+    const userProfile = await scraper.getProfile(browser, input.handle)
+
+    // get followers
+    const followers = await scraper.getFollowers(browser, input.handle, input.followersDesired, 'followers')
+
+    // get following
+    const following = await scraper.getFollowers(browser, input.handle, input.followersDesired, 'following')
 
     // store data
     await Apify.pushData({

@@ -19,7 +19,7 @@
             "title": "Profile to Scrape",
             "type": "string",
             "description": "The twitter handle of the profile you want to scrape.",
-            "prefill": "@elonmusk",
+            "prefill": "elonmusk",
             "editor": "textfield"
         },
         "tweetsDesired": {

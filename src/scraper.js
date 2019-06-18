@@ -96,7 +96,7 @@ module.exports = {
         if (output.length > tweetCount) output.length = tweetCount;
 
         console.log("[FINISHED] Scraping tweets.")
-        return output;
+        return Promise.resolve(output);
     },
 
     getProfile: async function(browser, handle) {
@@ -123,7 +123,7 @@ module.exports = {
         userProfile = Object.assign(userProfile, profileDescription);
 
         console.log("[FINISHED] Scraping profile.")
-        return userProfile;
+        return Promise.resolve(userProfile);
     },
 
     scrapeFollowers: async function(page, output) {
@@ -173,6 +173,6 @@ module.exports = {
         if (output.length > desired) output.length = desired;
 
         console.log(`[FINISHED] Scraping ${type}.`)
-        return output;
+        return Promise.resolve(output);
     }
 }
