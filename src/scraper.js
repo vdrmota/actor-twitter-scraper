@@ -74,10 +74,11 @@ module.exports = {
 
     },
 
-    getActivity: async function(page, handle, tweetCount) {
+    getActivity: async function(browser, handle, tweetCount) {
 
         const SCROLL_DURATION = 1
 
+        const page = await browser.newPage();
         await page.goto(`https://twitter.com/${handle}/with_replies`);
         await preparePage(page);
 
@@ -94,15 +95,17 @@ module.exports = {
         // truncate overflow output due to high SCROLL_DURATION
         if (output.length > tweetCount) output.length = tweetCount;
 
+        console.log("[FINISHED] Scraping tweets.")
         return output;
     },
 
-    getProfile: async function(page, handle) {
+    getProfile: async function(browser, handle) {
 
         var userProfile = {
             username: handle
         }
 
+        const page = await browser.newPage();
         await page.goto(`https://twitter.com/${handle}`);
         await preparePage(page)
 
@@ -119,6 +122,7 @@ module.exports = {
 
         userProfile = Object.assign(userProfile, profileDescription);
 
+        console.log("[FINISHED] Scraping profile.")
         return userProfile;
     },
 
@@ -147,11 +151,11 @@ module.exports = {
 
     },
 
-    getFollowers: async function(page, handle, desired, type) {
+    getFollowers: async function(browser, handle, desired, type) {
 
         const SCROLL_DURATION = 1
 
-        console.log(type)
+        const page = await browser.newPage();
         await page.goto(`https://twitter.com/${handle}/${type}`);
         await preparePage(page)
 
@@ -168,6 +172,7 @@ module.exports = {
         // truncate overflow output due to high SCROLL_DURATION
         if (output.length > desired) output.length = desired;
 
+        console.log(`[FINISHED] Scraping ${type}.`)
         return output;
     }
 }
