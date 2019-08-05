@@ -1,40 +1,15 @@
 const Apify = require('apify');
 const scraper = require('./scraper')
-const {
-    login,
-    verificationCheck,
-    promptVerification,
-    preparePage
-} = require('./helpers')
 
 Apify.main(async () => {
 
     // open fresh twitter
     const input = await Apify.getValue('INPUT');
-    const launchPuppeteerOptions = Object.assign(input.proxyConfig || {}, { liveView: true });
+    const launchPuppeteerOptions = input.proxyConfig || {};
     const browser = await Apify.launchPuppeteer(launchPuppeteerOptions);
     const page = await browser.newPage();
+    await page.setCookie(...input.initialCookies)
     await page.goto('https://twitter.com');
-
-    // login
-    try {
-        await login(page, input)
-    }
-    catch (err) {
-        throw new Error("[FAILED] Incorrect login credentials.")
-    }
-
-    // check for human verification requirement
-    const requiredVerification = await verificationCheck(page)
-
-    // prompt for human verification, if needed
-    if (requiredVerification) {
-        const verificationCode = await promptVerification()
-
-        // enter login verification
-        await page.type('#challenge_response', verificationCode);
-        await page.click('#email_challenge_submit');
-    }
 
     // get tweet history
     const tweetHistory = await scraper.getActivity(browser, input.handle, input.tweetsDesired)

@@ -3,16 +3,10 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "username": {
-            "title": "Your Twitter Username",
+        "initialCookes": {
+            "title": "Login Cookies",
             "type": "string",
-            "description": "Your Twitter username will be used to bypass the Twitter login wall.",
-            "editor": "textfield"
-        },
-        "password": {
-            "title": "Your Twitter Password",
-            "type": "string",
-            "description": "Your Twitter password will be used to bypass the Twitter login wall.",
+            "description": "Your login cookies will be used to bypass the login wall.",
             "editor": "textfield"
         },
         "handle": {
