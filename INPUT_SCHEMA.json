@@ -42,5 +42,5 @@
             "editor": "proxy"
         }
     },
-    "required": ["username", "password", "handle"]
+    "required": ["initialCookes", "handle"]
 }
