@@ -5,9 +5,9 @@
     "properties": {
         "initialCookes": {
             "title": "Login Cookies",
-            "type": "string",
+            "type": "array",
             "description": "Your login cookies will be used to bypass the login wall.",
-            "editor": "textarea"
+            "editor": "json"
         },
         "handle": {
             "title": "List of handles to scrape",
