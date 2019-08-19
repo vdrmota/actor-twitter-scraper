@@ -22,18 +22,6 @@
             "description": "Max. Number of Tweets to Retrieve.",
             "prefill": 100
         },
-        "followersDesired": {
-            "title": "Max. Followers",
-            "type": "integer",
-            "description": "Max. Number of Followers to Retrieve.",
-            "prefill": 100
-        },
-        "followingDesired": {
-            "title": "Max. Following",
-            "type": "integer",
-            "description": "Max. Number of Following to Retrieve.",
-            "prefill": 100
-        },
         "proxyConfig": {
             "title": "Proxy configuration",
             "type": "object",
