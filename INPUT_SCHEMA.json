@@ -7,7 +7,7 @@
             "title": "Login Cookies",
             "type": "string",
             "description": "Your login cookies will be used to bypass the login wall.",
-            "editor": "json"
+            "editor": "textarea"
         },
         "handle": {
             "title": "List of handles to scrape",
