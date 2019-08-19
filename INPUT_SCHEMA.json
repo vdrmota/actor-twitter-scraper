@@ -10,11 +10,11 @@
             "editor": "textfield"
         },
         "handle": {
-            "title": "Profile to Scrape",
-            "type": "string",
+            "title": "List of handles to scrape",
+            "type": "array",
             "description": "The twitter handle of the profile you want to scrape.",
-            "prefill": "elonmusk",
-            "editor": "textfield"
+            "prefill": ["elonmusk", "realDonaldTrump"],
+            "editor": "stringList"
         },
         "tweetsDesired": {
             "title": "Max. Tweets",

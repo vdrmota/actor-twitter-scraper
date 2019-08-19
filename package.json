@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "apify": "^0.14.15",
+    "eslint": "^6.2.0",
     "http": "0.0.0"
   }
 }
