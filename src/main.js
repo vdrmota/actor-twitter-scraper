@@ -8,26 +8,18 @@ Apify.main(async () => {
     const browser = await Apify.launchPuppeteer(launchPuppeteerOptions);
     const page = await browser.newPage();
     await page.setCookie(...input.initialCookies);
+    let requestQueue = [];
 
     for (var i = 0, n = input.handle.length; i < n; i++) {
-
         const handle = input.handle[i];
-        await page.goto(`https://twitter.com/${handle}`);
-
         const scraperOpts = {
             browser,
             handle,
             tweetCount: input.tweetsDesired,
         }
-
-        const [
-            tweetHistory,
-            userProfile,
-        ] = await Promise.all([scraper.getActivity(scraperOpts), scraper.getProfile(scraperOpts)])
-
-        await Apify.pushData({
-            userProfile: userProfile,
-            tweetHistory: tweetHistory
-        });
+        requestQueue.push(scraper.getActivity(scraperOpts));
     }
+
+    return await Promise.all(requestQueue)
+    
 })

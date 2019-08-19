@@ -1,6 +1,7 @@
 const {
     infiniteScroll
 } = require('./helpers')
+const Apify = require('apify');
 
 module.exports = {
 
@@ -10,7 +11,7 @@ module.exports = {
         const page = await browser.newPage();
         await page.goto(`https://twitter.com/${handle}/with_replies`);
 
-        var output = [];
+        var output = {user: {}, tweets: []};
 
         page.on('response', async (response) => {
             if (response.url().includes('/timeline/profile/')) {         
@@ -18,7 +19,7 @@ module.exports = {
                     const data = await response.json();
                     Object.keys(data.globalObjects.tweets).forEach((key) => {
                         const tweet = data.globalObjects.tweets[key];
-                        output.push({
+                        output.tweets.push({
                             contentText: tweet.full_text,
                             conversationId: tweet.conversation_id_str,
                             replies: tweet.reply_count,
@@ -28,6 +29,16 @@ module.exports = {
                             tweetId: key,
                         })
                     })
+                    Object.keys(data.globalObjects.users).forEach((key) => {
+                        const user = data.globalObjects.users[key];
+                        if (user.screen_name == handle) {
+                            output.user.name = user.name;
+                            output.user.description = user.description;
+                            output.user.location = user.location;
+                            output.user.joined = user.created_at;
+                            output.user.username = handle;
+                        }
+                    })
                 } catch(err) {
                     //console.log(err)
                 }
@@ -36,19 +47,19 @@ module.exports = {
 
         // scraped desired number of tweets
         do {
-            var oldOutputLength = output.length;
+            var oldOutputLength = output.tweets.length;
             if (oldOutputLength > 0) {
-                console.log("Scraped " + oldOutputLength + " tweets")
+                console.log(`Scraped ${oldOutputLength} ${handle}'s tweets`)
             }
             await infiniteScroll(page, SCROLL_DURATION);
-        } while (output.length < tweetCount && output.length > oldOutputLength)
+        } while (output.tweets.length < tweetCount && output.tweets.length > oldOutputLength)
 
         // truncate overflow output due to high SCROLL_DURATION
-        if (output.length > tweetCount) output.length = tweetCount;
+        if (output.tweets.length > tweetCount) output.tweets.length = tweetCount;
 
-        console.log("Scraped " + output.length + " tweets")
-        console.log("[FINISHED] Scraping tweets.")
-        return output;
+        console.log(`Scraped ${output.tweets.length} ${handle}'s tweets`)
+        console.log(`[FINISHED] Scraping ${handle}'s tweets.`)
+        return await Apify.pushData(output);
     },
 
     getProfile: async function({browser, handle}) {
@@ -74,14 +85,14 @@ module.exports = {
                             }
                         })
                     } catch(err) {
-                        reject(err);
+                        //reject(err);
                     }
     
                 }
             });
         })       
 
-        console.log("[FINISHED] Scraping profile.")
+        console.log(`[FINISHED] Scraping ${handle}'s profile.`)
         return userProfile;
     },
 }
