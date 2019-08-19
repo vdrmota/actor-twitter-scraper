@@ -1,6 +1,6 @@
 module.exports = {
 
-    infiniteScroll: async function(page, maxTimeout = 0, waitForDynamicContent = 4) {
+    infiniteScroll: async function(page, maxTimeout = 0, waitForDynamicContent = 6) {
 
         var finished;
         const MAX_TIMEOUT = maxTimeout; // seconds
