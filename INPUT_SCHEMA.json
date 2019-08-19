@@ -7,7 +7,7 @@
             "title": "Login Cookies",
             "type": "string",
             "description": "Your login cookies will be used to bypass the login wall.",
-            "editor": "textfield"
+            "editor": "json"
         },
         "handle": {
             "title": "List of handles to scrape",
@@ -20,19 +20,19 @@
             "title": "Max. Tweets",
             "type": "integer",
             "description": "Max. Number of Tweets to Retrieve.",
-            "default": 100
+            "prefill": 100
         },
         "followersDesired": {
             "title": "Max. Followers",
             "type": "integer",
             "description": "Max. Number of Followers to Retrieve.",
-            "default": 100
+            "prefill": 100
         },
         "followingDesired": {
             "title": "Max. Following",
             "type": "integer",
             "description": "Max. Number of Following to Retrieve.",
-            "default": 100
+            "prefill": 100
         },
         "proxyConfig": {
             "title": "Proxy configuration",
