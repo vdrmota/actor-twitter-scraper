@@ -7,7 +7,7 @@ module.exports = {
 
     getActivity: async function({browser, handle, tweetCount}) {
 
-        const SCROLL_DURATION = 10;
+        const SCROLL_DURATION = 0;
         const page = await browser.newPage();
         await page.goto(`https://twitter.com/${handle}/with_replies`);
 
@@ -45,13 +45,15 @@ module.exports = {
             }
         });
 
+        infiniteScroll(page, SCROLL_DURATION);
+
         // scraped desired number of tweets
         do {
             var oldOutputLength = output.tweets.length;
             if (oldOutputLength > 0) {
                 console.log(`Scraped ${oldOutputLength} ${handle}'s tweets...`)
             }
-            await infiniteScroll(page, SCROLL_DURATION);
+            await new Promise(resolve => setTimeout(resolve, 5000))
         } while (output.tweets.length < tweetCount && output.tweets.length > oldOutputLength)
 
         // truncate overflow output due to high SCROLL_DURATION

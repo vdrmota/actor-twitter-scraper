@@ -46,9 +46,9 @@ module.exports = {
                 window.scrollBy(0, delta);
             });
             if (finished) {
+                console.log("breaking")
                 break;
             }
-            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 }
