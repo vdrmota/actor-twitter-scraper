@@ -15,32 +15,30 @@ module.exports = {
             matchNumber: 0
         };
 
-        new Promise((resolve, reject) => {
+        page.on('request', (msg) => {
+            if (maybeResourceTypesInfiniteScroll.includes(msg.resourceType())) {
+                resourcesStats.newRequested++;
+            }
+        });
 
-            page.on('request', (msg) => {
-                if (maybeResourceTypesInfiniteScroll.includes(msg.resourceType())) {
-                    resourcesStats.newRequested++;
+        const scrollDown = setInterval(() => {
+            if (resourcesStats.oldRequested === resourcesStats.newRequested) {
+                resourcesStats.matchNumber++;
+                if (resourcesStats.matchNumber >= WAIT_FOR_DYNAMIC_CONTENT) {
+                    clearInterval(scrollDown);
+                    console.log("good finish")
+                    finished = true;
                 }
-            });
-
-            const scrollDown = setInterval(() => {
-                if (resourcesStats.oldRequested === resourcesStats.newRequested) {
-                    resourcesStats.matchNumber++;
-                    if (resourcesStats.matchNumber >= WAIT_FOR_DYNAMIC_CONTENT) {
-                        clearInterval(scrollDown)
-                        resolve(finished = true);
-                    }
-                } else {
-                    resourcesStats.matchNumber = 0;
-                    resourcesStats.oldRequested = resourcesStats.newRequested;
-                }
-                // check if timeout has been reached
-                if (MAX_TIMEOUT != 0 && (Date.now() - startTime) / 1000 > MAX_TIMEOUT) {
-                    clearInterval(scrollDown)
-                    resolve(finished = true);
-                }
-            }, 1000)
-        })
+            } else {
+                resourcesStats.matchNumber = 0;
+                resourcesStats.oldRequested = resourcesStats.newRequested;
+            }
+            // check if timeout has been reached
+            if (MAX_TIMEOUT != 0 && (Date.now() - startTime) / 1000 > MAX_TIMEOUT) {
+                clearInterval(scrollDown)
+                finished = true;
+            }
+        }, 2000)
 
         while (true) {
             await page.evaluate(async () => {

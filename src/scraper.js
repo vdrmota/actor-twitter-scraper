@@ -49,7 +49,7 @@ module.exports = {
         do {
             var oldOutputLength = output.tweets.length;
             if (oldOutputLength > 0) {
-                console.log(`Scraped ${oldOutputLength} ${handle}'s tweets`)
+                console.log(`Scraped ${oldOutputLength} ${handle}'s tweets...`)
             }
             await infiniteScroll(page, SCROLL_DURATION);
         } while (output.tweets.length < tweetCount && output.tweets.length > oldOutputLength)
@@ -57,7 +57,7 @@ module.exports = {
         // truncate overflow output due to high SCROLL_DURATION
         if (output.tweets.length > tweetCount) output.tweets.length = tweetCount;
 
-        console.log(`Scraped ${output.tweets.length} ${handle}'s tweets`)
+        console.log(`Scraped ${output.tweets.length} ${handle}'s tweets...`)
         console.log(`[FINISHED] Scraping ${handle}'s tweets.`)
         return await Apify.pushData(output);
     },
