@@ -20,6 +20,7 @@ Apify.main(async () => {
         requestQueue.push(scraper.getActivity(scraperOpts));
     }
 
+    console.log("Starting scraping jobs...")
     return await Promise.all(requestQueue)
     
 })
