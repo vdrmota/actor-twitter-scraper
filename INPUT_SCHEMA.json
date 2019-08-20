@@ -6,7 +6,7 @@
         "initialCookies": {
             "title": "Login Cookies",
             "type": "array",
-            "description": "Your login cookies will be used to bypass the login wall. See ReadMe for instructions.",
+            "description": "Your login cookies will be used to bypass the login wall. See <a href='google.com'>ReadMe</a> for instructions.",
             "editor": "json"
         },
         "handle": {
