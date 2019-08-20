@@ -11,7 +11,7 @@ module.exports = {
         const maybeResourceTypesInfiniteScroll = ['xhr', 'fetch', 'websocket', 'other'];
         const resourcesStats = {
             newRequested: 0,
-            oldRequested: 0,ff
+            oldRequested: 0,
             matchNumber: 0
         };
 
