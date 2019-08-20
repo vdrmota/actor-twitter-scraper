@@ -26,7 +26,6 @@ module.exports = {
                 resourcesStats.matchNumber++;
                 if (resourcesStats.matchNumber >= WAIT_FOR_DYNAMIC_CONTENT) {
                     clearInterval(scrollDown);
-                    console.log("good finish")
                     finished = true;
                 }
             } else {
@@ -46,7 +45,6 @@ module.exports = {
                 window.scrollBy(0, delta);
             });
             if (finished) {
-                console.log("breaking")
                 break;
             }
         }

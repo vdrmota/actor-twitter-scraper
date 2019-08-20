@@ -53,7 +53,7 @@ module.exports = {
             if (oldOutputLength > 0) {
                 console.log(`Scraped ${oldOutputLength} ${handle}'s tweets...`)
             }
-            await new Promise(resolve => setTimeout(resolve, 10000))
+            await new Promise(resolve => setTimeout(resolve, 20000))
         } while (output.tweets.length < tweetCount && output.tweets.length > oldOutputLength)
 
         // truncate overflow output due to high SCROLL_DURATION
