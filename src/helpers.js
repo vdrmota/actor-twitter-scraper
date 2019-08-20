@@ -48,6 +48,7 @@ module.exports = {
             if (finished) {
                 break;
             }
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 }
