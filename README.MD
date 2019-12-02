@@ -35,34 +35,37 @@ For each Twitter profile scraped, the resulting dataset contains a single record
   "offset": 0,
   "count": 1,
   "limit": 999999999999,
-  "items": [{
-    "user": {
-      "name": "Patrick Collison",
-      "description": "Fallibilist, optimist. Stripe CEO.",
-      "location": "patrick@stripe.com",
-      "joined": "Tue Apr 17 01:46:27 +0000 2007",
-      "username": "patrickc"
-    },
-    "tweets": [
+  "items": [
     {
-      "contentText": "@balajis I'm very happy to visit many restaurants that I suspect are not particularly good businesses.",
-      "conversationId": "1162066623240347648",
-      "replies": 2,
-      "retweets": 0,
-      "favorites": 51,
-      "dateTime": "Thu Aug 15 18:23:53 +0000 2019",
-      "tweetId": "1162067401954869248"
+      "user": {
+        "name": "Patrick Collison",
+        "description": "Fallibilist, optimist. Stripe CEO.",
+        "location": "patrick@stripe.com",
+        "joined": "Tue Apr 17 01:46:27 +0000 2007",
+        "username": "patrickc"
+      },
+      "tweets": [
+        {
+          "contentText": "@balajis I'm very happy to visit many restaurants that I suspect are not particularly good businesses.",
+          "conversationId": "1162066623240347648",
+          "replies": 2,
+          "retweets": 0,
+          "favorites": 51,
+          "dateTime": "Thu Aug 15 18:23:53 +0000 2019",
+          "tweetId": "1162067401954869248"
+        },
+        {
+          "contentText": "I've wanted this feature for so long. 😍 https://t.co/jspRvv8wDD https://t.co/Q0gRwwIGYd https://t.co/k30UK0hvdc",
+          "conversationId": "1161319133570457600",
+          "replies": 13,
+          "retweets": 12,
+          "favorites": 247,
+          "dateTime": "Tue Aug 13 16:50:32 +0000 2019",
+          "tweetId": "1161319133570457600"
+        }
+      ]
     },
-    {
-      "contentText": "I've wanted this feature for so long. 😍 https://t.co/jspRvv8wDD https://t.co/Q0gRwwIGYd https://t.co/k30UK0hvdc",
-      "conversationId": "1161319133570457600",
-      "replies": 13,
-      "retweets": 12,
-      "favorites": 247,
-      "dateTime": "Tue Aug 13 16:50:32 +0000 2019",
-      "tweetId": "1161319133570457600"
-    },
-    ...
+    ... 
   ]
 }
 ```
