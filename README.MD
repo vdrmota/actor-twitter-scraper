@@ -30,7 +30,12 @@ from where they can be downloaded in formats like JSON, HTML, CSV or Excel.
 For each Twitter profile scraped, the resulting dataset contains a single record, which looks as follows (in JSON format):
 
 ```json
-[{
+{
+  total: 1,
+  offset: 0,
+  count: 1,
+  imit: 999999999999,
+items: [{
   "user": {
     "name": "Patrick Collison",
     "description": "Fallibilist, optimist. Stripe CEO.",
