@@ -34,7 +34,7 @@ For each Twitter profile scraped, the resulting dataset contains a single record
   "total": 1,
   "offset": 0,
   "count": 1,
-  "limit: 999999999999,
+  "limit": 999999999999,
   "items": [{
     "user": {
       "name": "Patrick Collison",
