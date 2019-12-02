@@ -31,19 +31,19 @@ For each Twitter profile scraped, the resulting dataset contains a single record
 
 ```json
 {
-  total: 1,
-  offset: 0,
-  count: 1,
-  imit: 999999999999,
-items: [{
-  "user": {
-    "name": "Patrick Collison",
-    "description": "Fallibilist, optimist. Stripe CEO.",
-    "location": "patrick@stripe.com",
-    "joined": "Tue Apr 17 01:46:27 +0000 2007",
-    "username": "patrickc"
-  },
-  "tweets": [
+  "total": 1,
+  "offset": 0,
+  "count": 1,
+  "limit: 999999999999,
+  "items": [{
+    "user": {
+      "name": "Patrick Collison",
+      "description": "Fallibilist, optimist. Stripe CEO.",
+      "location": "patrick@stripe.com",
+      "joined": "Tue Apr 17 01:46:27 +0000 2007",
+      "username": "patrickc"
+    },
+    "tweets": [
     {
       "contentText": "@balajis I'm very happy to visit many restaurants that I suspect are not particularly good businesses.",
       "conversationId": "1162066623240347648",
