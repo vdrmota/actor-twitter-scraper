@@ -10,13 +10,14 @@ The actor crawls specified twitter profiles and scrapes the following informatio
 - Number of favorites, replies, and retweets for each tweet
 - Conversation threads the tweets belong to
 
-The actor is useful for extracting large amounts of tweet data. Unlike the Twitter API, it does not have rate limit contraints. 
+The actor is useful for extracting large amounts of tweet data. Unlike the Twitter API, it does not have rate limit contraints.
 
 ## Input Configuration
 
 The actor has the following input options
 
 - **Login Cookies** - Your Twitter login cookies (no username/password is submitted). For instructions on how to get your login cookies, please see our [tutorial](https://apify.com/help-dev/en/articles/1444249-log-in-to-website-by-transferring-cookies-from-web-browser).
+- **Mode** - Scrape only own tweets from the profile page or include replies to other users
 - **List of Handles** - Specify a list of twitter handles (usernames) you want to scrape
   shall the crawler visit. If zero, the actor ignores the links and only crawls the Start URLs.
 - **Max. Tweets** - Specify the maximum number of tweets you want to scrape.
@@ -29,7 +30,7 @@ from where they can be downloaded in formats like JSON, HTML, CSV or Excel.
 
 For each Twitter profile scraped, the resulting dataset contains a single record, which looks as follows (in JSON format):
 
-```json
+```jsonc
 {
   "user": {
     "name": "Patrick Collison",
@@ -57,7 +58,7 @@ For each Twitter profile scraped, the resulting dataset contains a single record
       "dateTime": "Tue Aug 13 16:50:32 +0000 2019",
       "tweetId": "1161319133570457600"
     },
-    ... 
+    //...
   ]
 }
 ```
@@ -69,3 +70,9 @@ https://api.apify.com/v2/datasets/[DATASET_ID]/items?format=json
 ```
 
 Where `DATASET_ID` is the ID of the dataset as provided in the actor run object. You can use the `format` query parameter to specify format of the results, e.g. `xml`, `csv` or `xlsx`.
+
+If you want only one tweet per line, use the `unwind` parameter:
+
+```
+https://api.apify.com/v2/datasets/[DATASET_ID]/items?format=json&unwind=tweets
+```

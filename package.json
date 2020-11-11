@@ -1,15 +1,21 @@
 {
-  "name": "twitter-extractor",
-  "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/main"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "apify": "^0.14.15"
-  }
+    "name": "twitter-extractor",
+    "version": "2.0.0",
+    "description": "",
+    "main": "main.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node src/main"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "apify": "^0.21.9",
+        "puppeteer": "^5.4.1"
+    },
+    "devDependencies": {
+        "@apify/eslint-config": "^0.1.3",
+        "@types/node": "^12",
+        "eslint": "^7.12.1"
+    }
 }

@@ -1,52 +1,61 @@
+const Apify = require('apify');
+
+const { log } = Apify.utils;
+
 module.exports = {
-
-    infiniteScroll: async function(page, maxTimeout = 0, waitForDynamicContent = 6) {
-
-        var finished;
+    async infiniteScroll(page, maxTimeout = 0, waitForDynamicContent = 6) {
+        let finished = false;
         const MAX_TIMEOUT = maxTimeout; // seconds
         const WAIT_FOR_DYNAMIC_CONTENT = waitForDynamicContent; // how many seconds to wait for nothing to load before exit
-        const startTime = Date.now()
-
+        const startTime = Date.now();
 
         const maybeResourceTypesInfiniteScroll = ['xhr', 'fetch', 'websocket', 'other'];
         const resourcesStats = {
             newRequested: 0,
             oldRequested: 0,
-            matchNumber: 0
+            matchNumber: 0,
         };
 
-        page.on('request', (msg) => {
-            if (maybeResourceTypesInfiniteScroll.includes(msg.resourceType())) {
-                resourcesStats.newRequested++;
-            }
-        });
+        const getRequest = (msg) => {
+            try {
+                if (maybeResourceTypesInfiniteScroll.includes(msg.resourceType())) {
+                    resourcesStats.newRequested++;
+                }
+            } catch (e) {}
+        };
 
-        const scrollDown = setInterval(() => {
+        page.on('request', getRequest);
+
+        const scrollDown = () => {
             if (resourcesStats.oldRequested === resourcesStats.newRequested) {
                 resourcesStats.matchNumber++;
                 if (resourcesStats.matchNumber >= WAIT_FOR_DYNAMIC_CONTENT) {
-                    clearInterval(scrollDown);
                     finished = true;
+                    return;
                 }
             } else {
                 resourcesStats.matchNumber = 0;
                 resourcesStats.oldRequested = resourcesStats.newRequested;
             }
             // check if timeout has been reached
-            if (MAX_TIMEOUT != 0 && (Date.now() - startTime) / 1000 > MAX_TIMEOUT) {
-                clearInterval(scrollDown)
+            if (MAX_TIMEOUT !== 0 && (Date.now() - startTime) / 1000 > MAX_TIMEOUT) {
+                finished = true;
+            } else {
+                setTimeout(scrollDown, 2000);
+            }
+        };
+
+        while (!finished) {
+            try {
+                await page.evaluate(async () => {
+                    const delta = document.body.scrollHeight === 0 ? 10000 : document.body.scrollHeight; // in case scrollHeight fixed to 0
+                    window.scrollBy(0, delta);
+                });
+            } catch (e) {
                 finished = true;
             }
-        }, 2000)
-
-        while (true) {
-            await page.evaluate(async () => {
-                let delta = document.body.scrollHeight === 0 ? 10000 : document.body.scrollHeight // in case scrollHeight fixed to 0
-                window.scrollBy(0, delta);
-            });
-            if (finished) {
-                break;
-            }
         }
-    }
-}
+
+        log.debug('Stopped scrolling');
+    },
+};
