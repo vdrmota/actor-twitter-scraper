@@ -16,11 +16,11 @@
             "type": "string",
             "editor": "select",
             "default": "replies",
-            "enum": [
+            "enumTitles": [
                 "Only own tweets",
                 "Own tweets and replies to other users"
             ],
-            "enumTitles": [
+            "enum": [
                 "own",
                 "replies"
             ]
