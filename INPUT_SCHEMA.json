@@ -45,5 +45,5 @@
             "editor": "json"
         }
     },
-    "required": ["mode", "handle"]
+    "required": ["handle"]
 }

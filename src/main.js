@@ -16,17 +16,22 @@ Apify.main(async () => {
         },
     })));
 
+    const isLoggingIn = input.initialCookies && input.initialCookies.length > 0;
+
     const crawler = new Apify.PuppeteerCrawler({
         handlePageTimeoutSecs: 3600,
         requestList,
         proxyConfiguration,
+        maxConcurrency: isLoggingIn ? 1 : undefined,
         sessionPoolOptions: {
             createSessionFunction: (sessionPool) => {
                 const session = new Apify.Session({
                     sessionPool,
+                    maxUsageCount: isLoggingIn ? 2000 : 50,
+                    maxErrorScore: 1,
                 });
 
-                if (input.initialCookies && input.initialCookies.length) {
+                if (isLoggingIn) {
                     session.setPuppeteerCookies(input.initialCookies, 'https://twitter.com');
                 }
 
@@ -35,7 +40,7 @@ Apify.main(async () => {
         },
         useSessionPool: true,
         persistCookiesPerSession: true,
-        gotoFunction: async ({ page, request }) => {
+        gotoFunction: async ({ page, request, puppeteerPool, session }) => {
             await Apify.utils.puppeteer.blockRequests(page, {
                 urlPatterns: [
                     '.jpg',
@@ -56,6 +61,9 @@ Apify.main(async () => {
                     waitUntil: 'domcontentloaded',
                 });
             } catch (e) {
+                session.retire();
+                await puppeteerPool.retire(page.browser());
+
                 throw new Error('Failed to load page, retrying');
             }
         },

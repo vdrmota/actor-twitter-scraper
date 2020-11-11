@@ -1,6 +1,6 @@
 module.exports = {
     async getProfile({ page, handle }) {
-        const page = await browser.newPage();
+        // TODO: reimplement this unused code using different output modes
         await page.goto(`https://twitter.com/${handle}`);
 
         const userProfile = await new Promise((resolve) => {
