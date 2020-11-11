@@ -3,18 +3,27 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "initialCookies": {
-            "title": "Login Cookies",
-            "type": "array",
-            "description": "Your login cookies will be used to bypass the login wall. See <a href='https://apify.com/vdrmota/twitter-scraper'>ReadMe</a> for instructions.",
-            "editor": "json"
-        },
         "handle": {
             "title": "List of handles to scrape",
             "type": "array",
             "description": "The twitter handles of the profiles you want to scrape.",
             "prefill": ["elonmusk", "patrickc"],
             "editor": "stringList"
+        },
+        "mode": {
+            "title": "Tweet types",
+            "description": "Select the tweet types to get. Only tweets or tweets and replies",
+            "type": "string",
+            "editor": "select",
+            "default": "replies",
+            "enum": [
+                "Only own tweets",
+                "Own tweets and replies to other users"
+            ],
+            "enumTitles": [
+                "own",
+                "replies"
+            ]
         },
         "tweetsDesired": {
             "title": "Max. Tweets",
@@ -28,7 +37,13 @@
             "description": "Optionally use a proxy.",
             "default": {},
             "editor": "proxy"
+        },
+        "initialCookies": {
+            "title": "Login Cookies",
+            "type": "array",
+            "description": "Your login cookies will be used to bypass the login wall. See <a href='https://apify.com/vdrmota/twitter-scraper'>ReadMe</a> for instructions.",
+            "editor": "json"
         }
     },
-    "required": ["initialCookies", "handle"]
+    "required": ["mode", "handle"]
 }
