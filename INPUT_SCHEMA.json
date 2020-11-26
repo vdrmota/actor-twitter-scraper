@@ -15,6 +15,7 @@
             "description": "Select the tweet types to get. Only tweets or tweets and replies",
             "type": "string",
             "editor": "select",
+            "prefill": "replies",
             "default": "replies",
             "enumTitles": [
                 "Only own tweets",
