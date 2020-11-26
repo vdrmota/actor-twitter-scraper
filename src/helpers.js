@@ -3,6 +3,18 @@ const Apify = require('apify');
 const { log } = Apify.utils;
 
 module.exports = {
+    /**
+     * @param {string} handle
+     */
+    cleanupHandle(handle) {
+        const matches = handle.match(/^(?:https:\/\/(mobile|www)?\.?twitter\.com\/|@)?(?<HANDLE>[a-zA-Z0-9_]{1,15})$/);
+
+        if (!matches || !matches.groups || !matches.groups.HANDLE) {
+            throw new Error(`Invalid handle provided: ${handle}`);
+        }
+
+        return matches.groups.HANDLE;
+    },
     async infiniteScroll(page, maxTimeout = 0, waitForDynamicContent = 6) {
         let finished = false;
         const MAX_TIMEOUT = maxTimeout; // seconds

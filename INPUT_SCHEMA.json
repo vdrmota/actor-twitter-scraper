@@ -35,6 +35,9 @@
             "title": "Proxy configuration",
             "type": "object",
             "description": "Optionally use a proxy.",
+            "prefill": {
+                "useApifyProxy": true
+            },
             "default": {},
             "editor": "proxy"
         },

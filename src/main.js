@@ -1,5 +1,5 @@
 const Apify = require('apify');
-const { infiniteScroll } = require('./helpers');
+const { infiniteScroll, cleanupHandle } = require('./helpers');
 
 const { log, sleep } = Apify.utils;
 
@@ -10,7 +10,7 @@ Apify.main(async () => {
     const { tweetsDesired, mode = 'replies' } = input;
 
     const requestList = await Apify.openRequestList('HANDLES', input.handle.map((handle) => ({
-        url: `https://twitter.com/${handle}${mode === 'replies' ? '/with_replies' : ''}`,
+        url: `https://twitter.com/${cleanupHandle(handle)}${mode === 'replies' ? '/with_replies' : ''}`,
         userData: {
             handle,
         },
@@ -23,6 +23,9 @@ Apify.main(async () => {
         requestList,
         proxyConfiguration,
         maxConcurrency: isLoggingIn ? 1 : undefined,
+        launchPuppeteerOptions: {
+            stealth: false,
+        },
         sessionPoolOptions: {
             createSessionFunction: (sessionPool) => {
                 const session = new Apify.Session({
