@@ -1,6 +1,8 @@
 {
-	"name": "twitter-extractor",
-	"version": "0.0",
+	"name": "actor-twitter-scraper",
+	"version": "1.0",
 	"buildTag": "latest",
-	"env": null
+	"env": {
+        "npm_config_loglevel": "silent"
+    }
 }

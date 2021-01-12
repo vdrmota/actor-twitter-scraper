@@ -3,16 +3,63 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
+        "searchTerms": {
+            "title": "Search terms",
+            "type": "array",
+            "editor": "stringList",
+            "description": "Search for an specific terms and extract tweets for that term."
+        },
+        "searchMode": {
+            "title": "Search mode",
+            "description": "Search mode changes the way the data is received",
+            "editor": "select",
+            "type": "string",
+            "prefill": "",
+            "enum": [
+                "",
+                "live",
+                "user",
+                "image",
+                "video"
+            ],
+            "enumTitles": [
+                "Top",
+                "Latest",
+                "People",
+                "Photos",
+                "Videos"
+            ]
+        },
+        "toDate": {
+            "title": "Tweets newer than",
+            "description": "Will get tweets that are newer than this date. Can be used in conjunction with 'Tweets older than' to create specific date slices. Can use specific dates, such as YYYY-MM-DD or relative ones, like '1 month' or '2 days'",
+            "pattern": "(\\d{4}-\\d{2}-\\d{2}|(\\d+ )?\\S+)",
+            "type": "string",
+            "editor": "textfield"
+        },
+        "fromDate": {
+            "title": "Tweets older than",
+            "description": "Will start getting tweets from this date and older. Can be used in conjunction 'Tweets newer than'. Can use specific dates, such as YYYY-MM-DD or relative ones, like '1 month' or '2 days'",
+            "type": "string",
+            "pattern": "(\\d{4}-\\d{2}-\\d{2}|(\\d+ )?\\S+)",
+            "editor": "textfield"
+        },
+        "tweetsDesired": {
+            "title": "Max. Tweets",
+            "type": "integer",
+            "description": "Max. Number of Tweets to Retrieve.",
+            "prefill": 100
+        },
         "handle": {
             "title": "List of handles to scrape",
             "type": "array",
-            "description": "The twitter handles of the profiles you want to scrape.",
+            "description": "The twitter handles of the profiles you want to scrape. Shortcut instead of inputting https://twitter.com urls",
             "prefill": ["elonmusk", "patrickc"],
             "editor": "stringList"
         },
         "mode": {
             "title": "Tweet types",
-            "description": "Select the tweet types to get. Only tweets or tweets and replies",
+            "description": "Select the tweet types to get. Only tweets or tweets and replies for the selected handle when visiting profiles.",
             "type": "string",
             "editor": "select",
             "prefill": "replies",
@@ -26,21 +73,48 @@
                 "replies"
             ]
         },
-        "tweetsDesired": {
-            "title": "Max. Tweets",
-            "type": "integer",
-            "description": "Max. Number of Tweets to Retrieve.",
-            "prefill": 100
+        "startUrls": {
+            "title": "Start URLs",
+            "description": "If you have a file or a url list of twitter urls, you provide them here",
+            "default": [],
+            "type": "array",
+            "editor": "requestListSources"
         },
         "proxyConfig": {
             "title": "Proxy configuration",
             "type": "object",
-            "description": "Optionally use a proxy.",
+            "description": "Highly recommended to use a proxy.",
             "prefill": {
                 "useApifyProxy": true
             },
-            "default": {},
+            "default": {
+                "useApifyProxy": true
+            },
             "editor": "proxy"
+        },
+        "extendOutputFunction": {
+            "title": "Extend Output Function",
+            "description": "Add or remove properties on the output object or omit the output returning null",
+            "type": "string",
+            "default": "",
+            "prefill": "async ({ data, item, page, request, customData }) => {\n  return item;\n}",
+            "editor": "javascript"
+        },
+        "extendScraperFunction": {
+            "title": "Extend Scraper Function",
+            "description": "Advanced function that allows you to extend the default scraper functionality, allowing you to manually perform actions on the page",
+            "type": "string",
+            "default": "",
+            "prefill": "async ({ page, request, addSearch, addProfile, addEvent, customData, Apify }) => {\n \n}",
+            "editor": "javascript"
+        },
+        "customData": {
+            "title": "Custom data",
+            "description": "Any data that you want to have available inside the Extend Output/Scraper Function",
+            "default": {},
+            "prefill": {},
+            "type": "object",
+            "editor": "json"
         },
         "initialCookies": {
             "title": "Login Cookies",
@@ -49,5 +123,7 @@
             "editor": "json"
         }
     },
-    "required": ["handle"]
+    "required": [
+        "proxyConfig"
+    ]
 }

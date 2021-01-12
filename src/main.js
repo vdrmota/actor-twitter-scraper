@@ -1,36 +1,169 @@
 const Apify = require('apify');
-const { infiniteScroll, cleanupHandle } = require('./helpers');
+const _ = require('lodash');
+const {
+    infiniteScroll,
+    intervalPushData,
+    parseRelativeDate,
+    requestCounter,
+    cutOffDate,
+    createAddEvent,
+    createAddProfile,
+    createAddSearch,
+    extendFunction,
+    categorizeUrl,
+    tweetToUrl,
+} = require('./helpers');
+const { LABELS, USER_OMIT_FIELDS } = require('./constants');
+const { clearInterval } = require('timers')
 
-const { log, sleep } = Apify.utils;
+const { log } = Apify.utils;
 
 Apify.main(async () => {
+    /** @type {any} */
     const input = await Apify.getValue('INPUT');
 
     const proxyConfiguration = await Apify.createProxyConfiguration(input.proxyConfig);
-    const { tweetsDesired, mode = 'replies' } = input;
 
-    const requestList = await Apify.openRequestList('HANDLES', input.handle.map((handle) => ({
-        url: `https://twitter.com/${cleanupHandle(handle)}${mode === 'replies' ? '/with_replies' : ''}`,
-        userData: {
-            handle,
+    if (Apify.isAtHome() && (!proxyConfiguration || proxyConfiguration.groups.includes('GOOGLE_SERP'))) {
+        throw new Error('You need to provide a valid proxy group when running on the platform');
+    }
+
+    const {
+        tweetsDesired,
+        mode = 'replies',
+    } = input;
+
+    const requestQueue = await Apify.openRequestQueue();
+    const requestCounts = await requestCounter(tweetsDesired);
+
+    const { flush, pushData } = await intervalPushData(await Apify.openDataset(), 50);
+
+    const addProfile = createAddProfile(requestQueue);
+    const addSearch = createAddSearch(requestQueue);
+    const addEvent = createAddEvent(requestQueue);
+
+    const toDate = cutOffDate(-Infinity, input.toDate ? parseRelativeDate(input.toDate) : undefined);
+    const fromDate = cutOffDate(Infinity, input.fromDate ? parseRelativeDate(input.fromDate) : undefined);
+
+    const extendOutputFunction = await extendFunction({
+        map: async (data) => {
+            return Object.values(data.tweets).reduce((/** @type {any[]} */out, tweet) => {
+                log.debug('Tweet data', tweet);
+
+                const user = data.users[
+                    _.get(
+                        tweet,
+                        ['user_id_str'],
+                        _.get(tweet, ['user', 'id_str']),
+                    )
+                ];
+
+                out.push({
+                    user: {
+                        ..._.omit(user, USER_OMIT_FIELDS),
+                        created_at: new Date(user.created_at).toISOString(),
+                    },
+                    id: tweet.id_str,
+                    conversation_id: tweet.conversation_id_str,
+                    ..._.pick(tweet, [
+                        'full_text',
+                        'reply_count',
+                        'retweet_count',
+                        'favorite_count',
+                    ]),
+                    url: tweetToUrl(user, tweet.id_str),
+                    created_at: new Date(tweet.created_at).toISOString(),
+                });
+
+                return out;
+            }, []);
         },
-    })));
+        filter: async ({ item }) => {
+            return toDate(item.created_at) <= 0 && fromDate(item.created_at) >= 0;
+        },
+        output: async (item, { request }) => {
+            if (!requestCounts.isDone(request)) {
+                requestCounts.increaseCount(request);
+
+                pushData(item.id, item);
+            }
+        },
+        input,
+        key: 'extendOutputFunction',
+        helpers: {
+            _,
+        },
+    });
+
+    const extendScraperFunction = await extendFunction({
+        output: async () => {}, // no-op
+        input,
+        key: 'extendScraperFunction',
+        helpers: {
+            addProfile,
+            addSearch,
+            addEvent,
+            requestQueue,
+            _,
+        },
+    });
+
+    if (input.startUrls && input.startUrls.length) {
+        // parse requestsFromUrl
+        const requestList = await Apify.openRequestList('STARTURLS', input.startUrls || []);
+
+        let req;
+
+        while (req = await requestList.fetchNextRequest()) { // eslint-disable-line no-cond-assign
+            const categorized = categorizeUrl(req.url);
+
+            switch (categorized) {
+                case LABELS.EVENTS:
+                    await addEvent(req.url);
+                    break;
+                case LABELS.HANDLE:
+                    await addProfile(req.url, mode === 'replies');
+                    break;
+                case LABELS.SEARCH:
+                    await addSearch(req.url, input.searchMode);
+                    break;
+                default:
+                    throw new Error(`Unknown format ${categorized}`);
+            }
+        }
+    }
+
+    if (input.handle && input.handle.length) {
+        for (const handle of input.handle) {
+            await addProfile(handle, mode === 'replies');
+        }
+    }
+
+    if (input.searchTerms && input.searchTerms.length) {
+        for (const searchTerm of input.searchTerms) {
+            await addSearch(searchTerm, input.searchMode);
+        }
+    }
 
     const isLoggingIn = input.initialCookies && input.initialCookies.length > 0;
 
     const crawler = new Apify.PuppeteerCrawler({
         handlePageTimeoutSecs: 3600,
-        requestList,
+        requestQueue,
         proxyConfiguration,
         maxConcurrency: isLoggingIn ? 1 : undefined,
         launchPuppeteerOptions: {
             stealth: false,
         },
+        puppeteerPoolOptions: {
+            useIncognitoPages: true,
+            maxOpenPagesPerInstance: 1,
+        },
         sessionPoolOptions: {
             createSessionFunction: (sessionPool) => {
                 const session = new Apify.Session({
                     sessionPool,
-                    maxUsageCount: isLoggingIn ? 2000 : 50,
+                    maxUsageCount: isLoggingIn ? 5000 : 50,
                     maxErrorScore: 1,
                 });
 
@@ -47,6 +180,7 @@ Apify.main(async () => {
             await Apify.utils.puppeteer.blockRequests(page, {
                 urlPatterns: [
                     '.jpg',
+                    '.ico',
                     '.jpeg',
                     '.gif',
                     '.svg',
@@ -56,8 +190,16 @@ Apify.main(async () => {
                     'pbs.twimg.com/media',
                     'pbs.twimg.com/card_img',
                     'www.google-analytics.com',
+                    'branch.io',
+                    '/guide.json',
+                    '/client_event.json',
                 ],
             });
+
+            if (input.extendOutputFunction || input.extendScraperFunction) {
+                // insert jQuery only when the user have an output function
+                await Apify.utils.puppeteer.injectJQuery(page);
+            }
 
             try {
                 return page.goto(request.url, {
@@ -71,81 +213,79 @@ Apify.main(async () => {
             }
         },
         handlePageFunction: async ({ request, page }) => {
-            const { handle } = request.userData;
+            await extendScraperFunction(undefined, {
+                page,
+                request,
+            });
 
-            const output = {
-                user: {},
-                tweets: [],
-            };
-
-            const getResponse = async (response) => {
+            page.on('response', async (response) => {
                 try {
-                    if (response.url().includes('/timeline/profile/')) {
-                        const data = await response.json();
+                    const contentType = response.headers()['content-type'];
 
-                        Object.entries(data.globalObjects.tweets).forEach(([tweetId, tweet]) => {
-                            log.debug('Tweet data', tweet);
+                    if (!contentType || !`${contentType}`.includes('application/json')) {
+                        return;
+                    }
 
-                            output.tweets.push({
-                                contentText: tweet.full_text,
-                                conversationId: tweet.conversation_id_str,
-                                replies: tweet.reply_count,
-                                retweets: tweet.retweet_count,
-                                favorites: tweet.favorite_count,
-                                dateTime: new Date(tweet.created_at).toISOString(),
-                                tweetId,
-                            });
+                    const url = response.url();
+
+                    if (!url) {
+                        return;
+                    }
+
+                    /** @type {any} */
+                    const data = (await response.json());
+
+                    if (!data) {
+                        return;
+                    }
+
+                    if (
+                        (url.includes('/search/adaptive')
+                        || url.includes('/timeline/profile')
+                        || url.includes('/live_event/timeline'))
+                        && data.globalObjects
+                    ) {
+                        await extendOutputFunction(data.globalObjects, {
+                            request,
+                            page,
                         });
+                    }
 
-                        Object.values(data.globalObjects.users).forEach((user) => {
-                            if (user.screen_name === handle) {
-                                output.user.name = user.name;
-                                output.user.description = user.description;
-                                output.user.location = user.location;
-                                output.user.joined = new Date(user.created_at).toISOString();
-                                output.user.username = handle;
-                            }
+                    if (url.includes('/live_event/') && data.twitter_objects) {
+                        await extendOutputFunction(data.twitter_objects, {
+                            request,
+                            page,
                         });
                     }
                 } catch (err) {
-                    log.debug(err.message, { handle });
+                    log.debug(err.message, { request: request.userData });
                 }
-            };
+            });
 
-            page.on('response', getResponse);
+            let lastCount = requestCounts.currentCount(request);
 
-            infiniteScroll(page, 0);
-
-            // scraped desired number of tweets
-            let oldOutputLength = 0;
-            do {
-                oldOutputLength = output.tweets.length;
-
-                if (oldOutputLength > 0) {
-                    log.info(`Scraped ${oldOutputLength} ${handle}'s tweets...`);
+            const displayStatus = setInterval(() => {
+                if (lastCount !== requestCounts.currentCount(request)) {
+                    lastCount = requestCounts.currentCount(request);
+                    log.info(`Extracted ${lastCount} tweets from ${request.url}`);
                 }
+            }, 5000);
 
-                await sleep(20000);
-            } while (output.tweets.length < tweetsDesired && output.tweets.length > oldOutputLength);
+            await infiniteScroll({
+                page,
+                isDone: () => requestCounts.isDone(request),
+            });
 
-            // truncate overflow output due to high SCROLL_DURATION
-            if (output.tweets.length > tweetsDesired) {
-                output.tweets.length = tweetsDesired;
-            }
+            clearInterval(displayStatus);
 
-            log.info(`Scraped ${output.tweets.length} ${handle}'s tweets...`);
-
-            await Apify.pushData(output);
-
-            output.tweets.length = 0;
-
-            log.info(`[FINISHED] Scraping ${handle}'s profile.`);
+            page.removeAllListeners('response');
         },
     });
 
     log.info('Starting scraper');
 
     await crawler.run();
+    await flush();
 
     log.info('All finished');
 });

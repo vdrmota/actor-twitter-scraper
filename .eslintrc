@@ -1,3 +1,6 @@
 {
-    "extends": "@apify"
+    "extends": "@apify",
+    "rules": {
+        "max-len": 0
+    }
 }
